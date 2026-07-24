@@ -21,10 +21,6 @@ include:
   - project: 'libretro-infrastructure/ci-templates'
     file: '/linux-cmake.yml'
 
-  # Linux ARM 64-bit
-  - project: 'libretro-infrastructure/ci-templates'
-    file: '/linux-cmake-aarch64.yml'
-
   ################################## CELLULAR ##############################  ##
   # Android
   - project: 'libretro-infrastructure/ci-templates'
@@ -69,11 +65,11 @@ libretro-build-linux-aarch64:
   extends:
     - .core-defs
     - .libretro-linux-cmake-aarch64
-  # Same as the x64 job: the default image's GCC is too old for this core's
-  # C++ usage, so use the backports image and GCC 11.
-  image: $CI_SERVER_HOST:5050/libretro-infrastructure/libretro-build-aarch64-ubuntu:backports
+  # No image override: unlike the x64 image, the aarch64 one already ships a
+  # modern GCC (12, from ppa:ubuntu-toolchain-r/test in its Dockerfile), and it
+  # has no :backports tag at all. GCC 11 is not packaged there, so use 12.
   variables:
-    CORE_ARGS: ${BASE_CORE_ARGS} -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11
+    CORE_ARGS: ${BASE_CORE_ARGS} -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12
 
 ################################### CELLULAR #################################
 # Android ARMv8a
