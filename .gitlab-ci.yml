@@ -60,6 +60,17 @@ libretro-build-linux-x64:
   variables:
     CORE_ARGS: ${BASE_CORE_ARGS} -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11
 
+# Linux ARM 64-bit
+libretro-build-linux-aarch64:
+  extends:
+    - .core-defs
+    - .libretro-linux-cmake-aarch64
+  # No image override: unlike the x64 image, the aarch64 one already ships a
+  # modern GCC (12, from ppa:ubuntu-toolchain-r/test in its Dockerfile), and it
+  # has no :backports tag at all. GCC 11 is not packaged there, so use 12.
+  variables:
+    CORE_ARGS: ${BASE_CORE_ARGS} -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12
+
 ################################### CELLULAR #################################
 # Android ARMv8a
 android-arm64-v8a:
