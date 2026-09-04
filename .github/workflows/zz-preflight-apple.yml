@@ -19,6 +19,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: { submodules: recursive }
+      - name: Raise the minimum macOS the tree pins (11.0) to what std::format needs
+        run: sed -i '' 's/set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0")/set(CMAKE_OSX_DEPLOYMENT_TARGET "13.3")/' CMakeLists.txt
       - run: cmake -DCMAKE_BUILD_TYPE=Release $CORE_ARGS . -Bbuild/${{ matrix.name }} ${{ matrix.extra }}
       - run: cmake --build build/${{ matrix.name }} --target citra_libretro --config Release -- -j$(sysctl -n hw.ncpu)
       - run: |
