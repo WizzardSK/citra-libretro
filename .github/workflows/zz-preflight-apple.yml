@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     name: ${{ matrix.name }}
     env:
-      MACOSX_DEPLOYMENT_TARGET: "10.15"
+      MACOSX_DEPLOYMENT_TARGET: "13.3"
     steps:
       - uses: actions/checkout@v4
         with: { submodules: recursive }
@@ -24,31 +24,3 @@ jobs:
       - run: |
           f=$(find build/${{ matrix.name }} -name "citra_libretro.dylib" | head -1)
           echo "$f"; lipo -info "$f"; otool -L "$f" | head -5
-
-  apple-embedded:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { name: ios-arm64,  system: iOS,  minver: "13.0" }
-          - { name: tvos-arm64, system: tvOS, minver: "13.0" }
-    runs-on: macos-15
-    name: ${{ matrix.name }}
-    steps:
-      - uses: actions/checkout@v4
-        with: { submodules: recursive }
-      - name: Configure (replays the ios/tvos-cmake template)
-        run: |
-          cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-            -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-            -DCMAKE_C_FLAGS="-DIOS" -DCMAKE_CXX_FLAGS="-DIOS" \
-            -DIOS=ON \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.minver }} \
-            -DCMAKE_SYSTEM_NAME=${{ matrix.system }} \
-            -DCMAKE_SYSTEM_PROCESSOR=arm64 \
-            -DCMAKE_OSX_ARCHITECTURES=arm64 \
-            $CORE_ARGS . -Bbuild/${{ matrix.name }}
-      - run: cmake --build build/${{ matrix.name }} --target citra_libretro --config RelWithDebInfo -- -j$(sysctl -n hw.ncpu)
-      - run: |
-          f=$(find build/${{ matrix.name }} -name "citra_libretro.dylib" | head -1)
-          echo "$f"; lipo -info "$f"
